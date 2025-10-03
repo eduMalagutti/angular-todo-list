@@ -5,12 +5,14 @@ import {AppComponent} from './app.component';
 import {TodoItemComponent} from './todo-item/todo-item.component';
 import {FormsModule} from "@angular/forms";
 import {ProgressBarComponent} from './progress-bar/progress-bar.component';
+import {ToastComponent} from "./toast/toast.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     TodoItemComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    ToastComponent
   ],
     imports: [
         BrowserModule,

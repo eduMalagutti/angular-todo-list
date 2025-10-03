@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, Output} from '@angular/core';
 import {Todo} from "../todo.service";
 
 @Component({
@@ -16,6 +16,13 @@ import {Todo} from "../todo.service";
 export class TodoItemComponent {
 
   @Input() item!: Todo;
+
+  @Output() deleteRequest = new EventEmitter<Todo>();
+
+  @HostListener('click')
+  onClick() {
+    this.deleteRequest.emit(this.item);
+  }
 
   get color() {
     switch (this.item.priority) {
