@@ -26,7 +26,11 @@ export class TodoService {
     if (Math.random() < .8) {
       return this.http.delete<void>(`${API_URL}/${id}`);
     } else {
-      return throwError('Failed');
+      return new Observable<void>((observer) => {
+        setTimeout(() => {
+          observer.error('Error deleting item');
+        }, 1000);
+      })
     }
   }
 }
