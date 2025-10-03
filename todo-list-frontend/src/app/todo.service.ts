@@ -31,7 +31,7 @@ export class TodoService {
   remove(id: number): Observable<void> {
     return new Observable<void>(observer => {
       setTimeout(() => {
-        if (Math.random() < .8) {
+        if (Math.random() < .5) {
           removeFromMockData(id);
           observer.next();
         } else {

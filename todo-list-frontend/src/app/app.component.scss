@@ -13,3 +13,10 @@ input[type=text] {
   margin: 8px 0 0;
   box-sizing: border-box;
 }
+
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}

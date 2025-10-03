@@ -1,12 +1,19 @@
 import {Component} from '@angular/core';
 import {Todo, TodoService} from "./todo.service";
 import {BehaviorSubject, combineLatest, EMPTY, Observable} from "rxjs";
-import {catchError, map, switchMap, tap} from "rxjs/operators";
+import {catchError, finalize, map, switchMap, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
   template: `
-    <app-toast [message]="toast.message" [show]="toast.show" [isError]="toast.isError"></app-toast>
+    <div class="toast-container">
+      <app-toast
+        *ngFor="let toast of toasts"
+        [message]="toast.message"
+        [show]="toast.show"
+        [isError]="toast.isError">
+      </app-toast>
+    </div>
 
     <div class="title"><h1>A list of TODOs</h1></div>
 
@@ -19,6 +26,7 @@ import {catchError, map, switchMap, tap} from "rxjs/operators";
       <app-todo-item
         *ngFor="let todo of filteredTodos$ | async"
         [item]="todo"
+        [isDeleting]="deletingIds.has(todo.id)"
         (deleteRequest)="handleDelete($event)">
       </app-todo-item>
     </div>
@@ -27,25 +35,27 @@ import {catchError, map, switchMap, tap} from "rxjs/operators";
 })
 export class AppComponent {
 
+  private todos$ = new BehaviorSubject<Todo[]>([]);
   private refresh$ = new BehaviorSubject<void>(undefined);
 
   search$ = new BehaviorSubject<string>('');
-
-  isLoading = true;
-
   readonly filteredTodos$: Observable<Todo[]>;
-
-  toast = {message: '', show: false, isError: false};
+  isLoading = true;
+  deletingIds = new Set<number>();
+  toasts: {id: number, message: string, show: boolean, isError: boolean}[] = [];
 
   constructor(private todoService: TodoService) {
-    const allTodos$ = this.refresh$.pipe(
+    this.refresh$.pipe(
       tap(() => this.isLoading = true),
       switchMap(() => this.todoService.getAll()),
-      tap(() => this.isLoading = false)
-    );
+      tap((todos) => {
+        this.todos$.next(todos);
+        this.isLoading = false;
+      })
+    ).subscribe();
 
     this.filteredTodos$ = combineLatest([
-      allTodos$,
+      this.todos$,
       this.search$
     ]).pipe(
       map(([todos, search]) =>
@@ -57,19 +67,29 @@ export class AppComponent {
   }
 
   handleDelete(todoToDelete: Todo): void {
+    this.deletingIds.add(todoToDelete.id);
     this.todoService.remove(todoToDelete.id).pipe(
       catchError((error) => {
         this.showToast(error, true);
         return EMPTY;
-      })
+      }),
+      finalize(() => this.deletingIds.delete(todoToDelete.id))
     ).subscribe(() => {
+      const currentTodos = this.todos$.getValue();
+      this.todos$.next(currentTodos.filter(todo => todo.id !== todoToDelete.id));
       this.showToast('Item removed successfully!');
       this.refresh$.next();
     });
   }
 
   private showToast(message: string, isError = false): void {
-    this.toast = { message, isError, show: true };
-    setTimeout(() => this.toast.show = false, 3000);
+    const toastId = Date.now();
+    this.toasts.push({ id: toastId, message, isError, show: true });
+    setTimeout(() => {
+      const toastIndex = this.toasts.findIndex(toast => toast.id === toastId);
+      if (toastIndex > -1) {
+        this.toasts.splice(toastIndex, 1);
+      }
+    }, 3000);
   }
 }

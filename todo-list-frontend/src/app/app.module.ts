@@ -6,6 +6,7 @@ import {TodoItemComponent} from './todo-item/todo-item.component';
 import {FormsModule} from "@angular/forms";
 import {ProgressBarComponent} from './progress-bar/progress-bar.component';
 import {ToastComponent} from "./toast/toast.component";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   declarations: [
@@ -14,11 +15,13 @@ import {ToastComponent} from "./toast/toast.component";
     ProgressBarComponent,
     ToastComponent
   ],
-    imports: [
-        BrowserModule,
-        FormsModule
-    ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

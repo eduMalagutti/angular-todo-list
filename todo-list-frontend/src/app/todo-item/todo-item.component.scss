@@ -4,11 +4,22 @@
   padding: 12px 0 12px 12px;
   margin-top: 12px;
   border-radius: 6px;
+  transition: scale 0.1s ease-in-out, background-color 0.1s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+    scale: 1.01;
+  }
 }
 
 .task-indicator {
   display: inline-block;
   width: calc(100% - 37px);
+  transition: opacity 0.2s ease-in-out;
+
+  &.deleting {
+    pointer-events: none;
+  }
 }
 
 .priority-indicator {
