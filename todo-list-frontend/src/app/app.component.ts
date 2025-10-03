@@ -12,7 +12,7 @@ import {catchError, map, switchMap, tap} from "rxjs/operators";
 
     <div class="list">
       <label for="search">Search...</label>
-      <input id="search" type="text" [(ngModel)]="search$" (ngModelChange)="search$.next($event)">
+      <input id="search" type="text" [ngModel]="search$ | async" (ngModelChange)="search$.next($event)">
 
       <app-progress-bar *ngIf="isLoading"></app-progress-bar>
 
@@ -48,9 +48,9 @@ export class AppComponent {
       allTodos$,
       this.search$
     ]).pipe(
-      map(([todos, searchTerm]) =>
+      map(([todos, search]) =>
         todos.filter(todo =>
-          todo.task.toLowerCase().includes(searchTerm.toLowerCase())
+          todo.task.toLowerCase().includes(search.toLowerCase())
         )
       )
     );
