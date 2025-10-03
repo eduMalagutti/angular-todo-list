@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {Observable, throwError} from "rxjs";
 
 export interface Todo {
   id: number;
@@ -23,6 +23,10 @@ export class TodoService {
   }
 
   remove(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_URL}/${id}`);
+    if (Math.random() < .8) {
+      return this.http.delete<void>(`${API_URL}/${id}`);
+    } else {
+      return throwError('Failed');
+    }
   }
 }
