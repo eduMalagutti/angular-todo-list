@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Todo, TodoService} from "./todo.service";
 import {BehaviorSubject, combineLatest, EMPTY, Observable} from "rxjs";
-import {catchError, finalize, map, switchMap, tap} from "rxjs/operators";
+import {catchError, map, switchMap, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -42,7 +42,7 @@ export class AppComponent {
   readonly filteredTodos$: Observable<Todo[]>;
   isLoading = true;
   deletingIds = new Set<number>();
-  toasts: {id: number, message: string, show: boolean, isError: boolean}[] = [];
+  toasts: { id: number, message: string, show: boolean, isError: boolean }[] = [];
 
   constructor(private todoService: TodoService) {
     this.refresh$.pipe(
@@ -71,20 +71,19 @@ export class AppComponent {
     this.todoService.remove(todoToDelete.id).pipe(
       catchError((error) => {
         this.showToast(error, true);
+        this.deletingIds.delete(todoToDelete.id)
         return EMPTY;
-      }),
-      finalize(() => this.deletingIds.delete(todoToDelete.id))
+      })
     ).subscribe(() => {
-      const currentTodos = this.todos$.getValue();
-      this.todos$.next(currentTodos.filter(todo => todo.id !== todoToDelete.id));
       this.showToast('Item removed successfully!');
       this.refresh$.next();
+      this.deletingIds.delete(todoToDelete.id)
     });
   }
 
   private showToast(message: string, isError = false): void {
     const toastId = Date.now();
-    this.toasts.push({ id: toastId, message, isError, show: true });
+    this.toasts.push({id: toastId, message, isError, show: true});
     setTimeout(() => {
       const toastIndex = this.toasts.findIndex(toast => toast.id === toastId);
       if (toastIndex > -1) {
