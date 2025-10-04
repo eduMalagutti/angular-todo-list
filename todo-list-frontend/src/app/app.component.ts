@@ -1,7 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {Todo, TodoService} from "./todo.service";
-import {BehaviorSubject, combineLatest, EMPTY, Observable} from "rxjs";
-import {catchError, map, switchMap, tap} from "rxjs/operators";
+import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from "rxjs";
+import {catchError, map, switchMap, takeUntil, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,8 @@ import {catchError, map, switchMap, tap} from "rxjs/operators";
         *ngFor="let toast of toasts"
         [message]="toast.message"
         [show]="toast.show"
-        [isError]="toast.isError">
+        [isError]="toast.isError"
+        (close)="removeToast(toast.id)">
       </app-toast>
     </div>
 
@@ -33,16 +34,18 @@ import {catchError, map, switchMap, tap} from "rxjs/operators";
   `,
   styleUrls: ['app.component.scss']
 })
-export class AppComponent {
-
-  private todos$ = new BehaviorSubject<Todo[]>([]);
+export class AppComponent implements OnDestroy{
   private refresh$ = new BehaviorSubject<void>(undefined);
 
-  search$ = new BehaviorSubject<string>('');
   readonly filteredTodos$: Observable<Todo[]>;
+  private todos$ = new BehaviorSubject<Todo[]>([]);
+  search$ = new BehaviorSubject<string>('');
+
   isLoading = true;
   deletingIds = new Set<number>();
   toasts: { id: number, message: string, show: boolean, isError: boolean }[] = [];
+
+  private unsubscribeRefresh$ = new Subject<void>();
 
   constructor(private todoService: TodoService) {
     this.refresh$.pipe(
@@ -51,6 +54,7 @@ export class AppComponent {
       tap((todos) => {
         this.todos$.next(todos);
         this.isLoading = false;
+        takeUntil(this.unsubscribeRefresh$)
       })
     ).subscribe();
 
@@ -64,6 +68,11 @@ export class AppComponent {
         )
       )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeRefresh$.next();
+    this.unsubscribeRefresh$.complete();
   }
 
   handleDelete(todoToDelete: Todo): void {
@@ -85,10 +94,17 @@ export class AppComponent {
     const toastId = Date.now();
     this.toasts.push({id: toastId, message, isError, show: true});
     setTimeout(() => {
-      const toastIndex = this.toasts.findIndex(toast => toast.id === toastId);
-      if (toastIndex > -1) {
-        this.toasts.splice(toastIndex, 1);
+      const toast = this.toasts.find(t => t.id === toastId);
+      if (toast) {
+        toast.show = false;
       }
     }, 3000);
+  }
+
+  removeToast(toastId: number): void {
+    const toastIndex = this.toasts.findIndex(t => t.id === toastId);
+    if (toastIndex > -1) {
+      this.toasts.splice(toastIndex, 1);
+    }
   }
 }

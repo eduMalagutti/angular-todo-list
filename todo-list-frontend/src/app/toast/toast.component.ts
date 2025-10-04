@@ -1,10 +1,15 @@
-import {Component, Input} from '@angular/core';
-import {animate, style, transition, trigger} from "@angular/animations";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {animate, AnimationEvent, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-toast',
   template: `
-    <div class="toast" *ngIf="show" [@toastAnimation] [class.show]="show" [class.error]="isError">
+    <div class="toast" 
+         *ngIf="show" 
+         [class.show]="show" 
+         [class.error]="isError"
+         [@toastAnimation]
+         (@toastAnimation.done)="onClose($event)">
       {{ message }}
     </div>
   `,
@@ -25,4 +30,12 @@ export class ToastComponent {
   @Input() message!: string;
   @Input() show = false;
   @Input() isError = false;
+
+  @Output() close = new EventEmitter<void>();
+
+  onClose(event: AnimationEvent): void {
+    if (event.toState === 'void') {
+      this.close.emit();
+    }
+  }
 }
