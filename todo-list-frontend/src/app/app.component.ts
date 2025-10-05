@@ -37,8 +37,8 @@ import {catchError, map, switchMap, takeUntil, tap} from "rxjs/operators";
 export class AppComponent implements OnDestroy{
   private refresh$ = new BehaviorSubject<void>(undefined);
 
+  readonly todos$: Observable<Todo[]>;
   readonly filteredTodos$: Observable<Todo[]>;
-  private todos$ = new BehaviorSubject<Todo[]>([]);
   search$ = new BehaviorSubject<string>('');
 
   isLoading = true;
@@ -48,15 +48,16 @@ export class AppComponent implements OnDestroy{
   private unsubscribeRefresh$ = new Subject<void>();
 
   constructor(private todoService: TodoService) {
-    this.refresh$.pipe(
+    this.todos$ = this.refresh$.pipe(
       tap(() => this.isLoading = true),
       switchMap(() => this.todoService.getAll()),
-      tap((todos) => {
-        this.todos$.next(todos);
+      tap(() => this.isLoading = false),
+      catchError(err => {
+        this.showToast('Failed to load todos', true);
         this.isLoading = false;
-        takeUntil(this.unsubscribeRefresh$)
+        return EMPTY;
       })
-    ).subscribe();
+    );
 
     this.filteredTodos$ = combineLatest([
       this.todos$,
