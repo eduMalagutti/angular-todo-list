@@ -34,8 +34,9 @@ import {catchError, map, switchMap, takeUntil, tap} from "rxjs/operators";
   `,
   styleUrls: ['app.component.scss']
 })
-export class AppComponent implements OnDestroy{
+export class AppComponent implements OnDestroy {
   private refresh$ = new BehaviorSubject<void>(undefined);
+  private destroy$ = new Subject<void>();
 
   readonly todos$: Observable<Todo[]>;
   readonly filteredTodos$: Observable<Todo[]>;
@@ -44,8 +45,6 @@ export class AppComponent implements OnDestroy{
   isLoading = true;
   deletingIds = new Set<number>();
   toasts: { id: number, message: string, show: boolean, isError: boolean }[] = [];
-
-  private unsubscribeRefresh$ = new Subject<void>();
 
   constructor(private todoService: TodoService) {
     this.todos$ = this.refresh$.pipe(
@@ -72,13 +71,14 @@ export class AppComponent implements OnDestroy{
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeRefresh$.next();
-    this.unsubscribeRefresh$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleDelete(todoToDelete: Todo): void {
-    this.deletingIds.add(todoToDelete.id);
     this.todoService.remove(todoToDelete.id).pipe(
+      tap(() => this.deletingIds.add(todoToDelete.id)),
+      takeUntil(this.destroy$),
       catchError((error) => {
         this.showToast(error, true);
         this.deletingIds.delete(todoToDelete.id)
