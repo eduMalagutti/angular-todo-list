@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-
     @Getter
     @Builder
     public static class ErrorMessageDTO {
