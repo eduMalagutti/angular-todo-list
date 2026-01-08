@@ -12,9 +12,13 @@ configurations {
 }
 
 dependencies {
-
     api group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion
     api group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
+    implementation 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 }
+
+
+

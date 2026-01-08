@@ -1,4 +1,4 @@
-package com.todo.models;
+package com.todo.domain.entites;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

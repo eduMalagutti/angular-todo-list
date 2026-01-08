@@ -1,8 +1,9 @@
-package com.todo.services;
+package com.todo.features;
 
-import com.todo.exceptions.ResourceNotFoundException;
-import com.todo.models.Todo;
-import com.todo.repositories.TodoRepository;
+import com.todo.domain.exceptions.ResourceNotFoundException;
+import com.todo.domain.entites.Todo;
+import com.todo.domain.repositories.TodoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -11,13 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TodoService {
 
     private final TodoRepository todoRepository;
-
-    public TodoService(TodoRepository todoRepository) {
-        this.todoRepository = todoRepository;
-    }
 
     @Cacheable("todos")
     @Transactional(readOnly = true)

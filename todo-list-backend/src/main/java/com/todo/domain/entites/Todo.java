@@ -1,9 +1,15 @@
-package com.todo.models;
+package com.todo.domain.entites;
+
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Getter
+@Builder
 public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -11,32 +17,8 @@ public class Todo {
 
     private String task;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private PriorityEnum priority;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTask() {
-        return task;
-    }
-
-    public void setTask(String task) {
-        this.task = task;
-    }
-
-    public PriorityEnum getPriority() {
-        return priority;
-    }
-
-    public void setPriority(PriorityEnum priority) {
-        this.priority = priority;
-    }
 
     @Override
     public boolean equals(Object o) {
