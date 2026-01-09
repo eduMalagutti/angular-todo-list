@@ -1,12 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-
-export interface Todo {
-  id: number;
-  task: string;
-  priority: 1 | 2 | 3;
-}
+import {Todo} from "../types/todo";
 
 const API_URL = '/api/v1/todos';
 

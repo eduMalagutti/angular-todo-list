@@ -1,5 +1,5 @@
 import {Component, OnDestroy} from '@angular/core';
-import {Todo, TodoService} from "./todo.service";
+import {Todo, TodoService} from "./services/todo.service";
 import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from "rxjs";
 import {catchError, map, switchMap, takeUntil, tap} from "rxjs/operators";
 

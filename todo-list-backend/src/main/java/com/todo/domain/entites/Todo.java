@@ -19,7 +19,7 @@ public class Todo {
     @Column(columnDefinition = "VARCHAR(500)")
     private String task;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private PriorityEnum priority;
 
     @ManyToOne
