@@ -1,45 +1,49 @@
-import {Component, EventEmitter, HostListener, Input, Output} from '@angular/core';
-import {Todo} from "../../services/todo.service";
+import { Component, HostListener, input, output, computed } from '@angular/core';
+import { Todo } from '../../types/todo';
 
 @Component({
   selector: 'app-todo-item',
+  standalone: true,
   template: `
-    <div class="task-indicator" [class.deleting]="isDeleting">
-      <ng-container *ngIf="!isDeleting; else loading">
-        {{ item.task }}
-      </ng-container>
-      <ng-template #loading>
+    <div class="task-indicator" [class.deleting]="isDeleting()">
+      @if (!isDeleting()) {
+        {{ item().task }}
+      } @else {
         Deleting...
-      </ng-template>
+      }
     </div>
-    <div class="priority-indicator" [style.background-color]="color">
-      {{ item.priority }}
+    <div class="priority-indicator" [style.background-color]="color()">
+      {{ item().priority }}
     </div>
   `,
   styleUrls: ['todo-item.component.scss']
 })
 export class TodoItemComponent {
+  // Signal inputs
+  readonly item = input.required<Todo>();
+  readonly isDeleting = input(false);
 
-  @Input() item!: Todo;
-  @Input() isDeleting = false;
+  // Signal output
+  readonly deleteRequest = output<Todo>();
 
-  @Output() deleteRequest = new EventEmitter<Todo>();
-
-  @HostListener('click')
-  onClick() {
-    if (!this.isDeleting) {
-      this.deleteRequest.emit(this.item);
-    }
-  }
-
-  get color() {
-    switch (this.item.priority) {
+  // Computed signal for color based on priority
+  readonly color = computed(() => {
+    switch (this.item().priority) {
       case 1:
         return 'green';
       case 2:
         return 'yellow';
       case 3:
         return 'red';
+      default:
+        return 'gray';
+    }
+  });
+
+  @HostListener('click')
+  onClick() {
+    if (!this.isDeleting()) {
+      this.deleteRequest.emit(this.item());
     }
   }
 }
