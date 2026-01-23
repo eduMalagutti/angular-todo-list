@@ -1,8 +1,8 @@
-package com.todo.features;
+package com.todo.services;
 
-import com.todo.domain.exceptions.ResourceNotFoundException;
-import com.todo.domain.entites.Todo;
-import com.todo.domain.repositories.TodoRepository;
+import com.todo.exceptions.ResourceNotFoundException;
+import com.todo.entities.Todo;
+import com.todo.repositories.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

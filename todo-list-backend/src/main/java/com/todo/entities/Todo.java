@@ -1,4 +1,4 @@
-package com.todo.domain.entites;
+package com.todo.entities;
 
 import lombok.*;
 

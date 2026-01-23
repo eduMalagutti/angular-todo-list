@@ -1,4 +1,4 @@
-package com.todo.domain.exceptions;
+package com.todo.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException{
     public ResourceNotFoundException(String resource, String key, String value) {

@@ -1,6 +1,5 @@
-package com.todo.infrastructure;
+package com.todo.exceptions;
 
-import com.todo.domain.exceptions.ResourceNotFoundException;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

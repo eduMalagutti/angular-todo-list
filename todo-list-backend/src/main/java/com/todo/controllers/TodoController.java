@@ -1,6 +1,7 @@
-package com.todo.features;
+package com.todo.controllers;
 
-import com.todo.domain.entites.Todo;
+import com.todo.entities.Todo;
+import com.todo.services.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
