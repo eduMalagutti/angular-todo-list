@@ -1,6 +1,6 @@
-package com.todo.features.todolist;
+package com.todo.features;
 
-import com.todo.domain.entites.TodoList;
+import com.todo.domain.entites.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,33 +11,33 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/todolists")
+@RequestMapping("/v1/todos")
 @RequiredArgsConstructor
-public class TodoListController {
+public class TodoController {
 
-    private final TodoListService todoListService;
+    private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<TodoList> create(@Valid @RequestBody CreateTodoListDTO createTodoListDTO) {
-        var createdTodoList = todoListService.save(createTodoListDTO);
+    public ResponseEntity<Todo> create(@Valid @RequestBody CreateTodoDTO createTodoDTO) {
+        var createdTodo = todoService.save(createTodoDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(createdTodoList.getId())
+                .buildAndExpand(createdTodo.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(createdTodoList);
+        return ResponseEntity.created(location).body(createdTodo);
     }
 
     @GetMapping
-    public ResponseEntity<List<TodoList>> getAll() {
-        return ResponseEntity.ok(todoListService.getAll());
+    public ResponseEntity<List<Todo>> getAll() {
+        return ResponseEntity.ok(todoService.getAll());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        todoListService.delete(id);
+        todoService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

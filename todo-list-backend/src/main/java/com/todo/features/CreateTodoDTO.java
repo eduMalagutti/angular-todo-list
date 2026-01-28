@@ -1,4 +1,4 @@
-package com.todo.features.todo;
+package com.todo.features;
 
 import com.todo.domain.entites.PriorityEnum;
 import lombok.*;

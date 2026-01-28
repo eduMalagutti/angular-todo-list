@@ -1,9 +1,7 @@
-package com.todo.features.todo;
+package com.todo.features;
 
 import com.todo.domain.entites.Todo;
-import com.todo.domain.entites.TodoList;
 import com.todo.domain.exceptions.ResourceNotFoundException;
-import com.todo.domain.repositories.TodoListRepository;
 import com.todo.domain.repositories.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,6 @@ import java.util.List;
 public class TodoService {
 
     private final TodoRepository todoRepository;
-    private final TodoListRepository todoListRepository;
     private static final PolicyFactory SANITIZER = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
 
     @CacheEvict(value = "todos", allEntries = true)
@@ -30,15 +27,10 @@ public class TodoService {
     public Todo save(CreateTodoDTO createTodoDTO) {
         // Prevent XSS attacks
         String sanitizedTask = SANITIZER.sanitize(createTodoDTO.getTask());
-
-        TodoList todoList = todoListRepository.findById(createTodoDTO.getTodoListId())
-                .orElseThrow(() -> new ResourceNotFoundException("TodoList", "id",
-                        createTodoDTO.getTodoListId().toString()));
-
+        
         Todo todo = Todo.builder()
                 .task(sanitizedTask)
                 .priority(createTodoDTO.getPriority())
-                .todoList(todoList)
                 .build();
 
         return todoRepository.save(todo);

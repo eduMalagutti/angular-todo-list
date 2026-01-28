@@ -1,6 +1,5 @@
 package com.todo.domain.entites;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,11 +20,6 @@ public class Todo {
 
     @Enumerated(EnumType.ORDINAL)
     private PriorityEnum priority;
-
-    @ManyToOne
-    @JoinColumn(name = "todo_list_id")
-    @JsonBackReference
-    private TodoList todoList;
 
     @Override
     public boolean equals(Object o) {
