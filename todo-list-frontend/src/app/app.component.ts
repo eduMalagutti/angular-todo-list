@@ -1,13 +1,12 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { firstValueFrom } from 'rxjs';
-import { Todo } from './types/todo';
-import { TodoService } from './services/todo.service';
-import { TodoItemComponent } from './components/todo-item/todo-item.component';
-import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
-import { ToastComponent } from './components/toast/toast.component';
+import {Component, computed, inject, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {firstValueFrom} from 'rxjs';
+import {Todo} from './types/todo';
+import {TodoService} from './services/todo.service';
+import {TodoItemComponent} from './components/todo-item/todo-item.component';
+import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
+import {ToastComponent} from './components/toast/toast.component';
 
 interface Toast {
   id: number;
@@ -56,30 +55,34 @@ interface Toast {
 export class AppComponent {
   private readonly todoService = inject(TodoService);
 
-  // Signal to trigger refresh of todos
-  private readonly refreshTrigger = signal(0);
-
-  // rxResource for automatic HTTP->Signal bridging
-  private readonly todosResource = rxResource({
-    request: () => this.refreshTrigger(),
-    loader: () => this.todoService.getAll()
-  });
-
-  // Exposed signals for state
-  readonly todos = this.todosResource.value;
-  readonly isLoading = this.todosResource.isLoading;
-  readonly error = this.todosResource.error;
-
-  // Signals for UI state management
+  // Signals for state management
+  readonly todos = signal<Todo[]>([]);
+  readonly isLoading = signal(false);
   readonly search = signal('');
   readonly toasts = signal<Toast[]>([]);
   readonly deletingIds = signal(new Set<number>());
 
+  constructor() {
+    this.loadTodos();
+  }
+
+  private async loadTodos(): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      const data = await firstValueFrom(this.todoService.getAll());
+      this.todos.set(data);
+    } catch (error) {
+      this.showToast('Failed to load todos', true);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   // Computed signal for filtered todos
   readonly filteredTodos = computed(() => {
-    const todos = this.todos() ?? [];
+    const todos = this.todos();
     const searchTerm = this.search().toLowerCase();
-    return todos.filter(todo =>
+    return todos.filter((todo: Todo) =>
       todo.task.toLowerCase().includes(searchTerm)
     );
   });
@@ -95,7 +98,7 @@ export class AppComponent {
     try {
       await firstValueFrom(this.todoService.remove(todoToDelete.id));
       this.showToast('Item removed successfully!');
-      this.refreshTrigger.update(v => v + 1);
+      await this.loadTodos();
     } catch (error) {
       this.showToast(error as string, true);
     } finally {
@@ -112,13 +115,13 @@ export class AppComponent {
     const toastId = Date.now();
     this.toasts.update(toasts => [
       ...toasts,
-      { id: toastId, message, isError, show: true }
+      {id: toastId, message, isError, show: true}
     ]);
 
     setTimeout(() => {
       this.toasts.update(toasts =>
         toasts.map(t =>
-          t.id === toastId ? { ...t, show: false } : t
+          t.id === toastId ? {...t, show: false} : t
         )
       );
     }, 3000);

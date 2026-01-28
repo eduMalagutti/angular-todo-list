@@ -1,5 +1,5 @@
-import { Component, HostListener, input, output, computed } from '@angular/core';
-import { Todo } from '../../types/todo';
+import {Component, computed, HostListener, input, output} from '@angular/core';
+import {Todo} from '../../types/todo';
 
 @Component({
   selector: 'app-todo-item',
