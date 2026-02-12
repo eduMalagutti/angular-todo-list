@@ -1,5 +1,6 @@
 package com.todo.infrastructure;
 
+import com.todo.domain.exceptions.ResourceDuplicatedException;
 import com.todo.domain.exceptions.ResourceNotFoundException;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.time.Instant;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessageDTO> handleResourceNotFoundException(
+    public ResponseEntity<ErrorMessageDTO> handleNotFoundExceptions(
             HttpServletRequest request,
             ResourceNotFoundException e) {
 
@@ -27,6 +28,21 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(ResourceDuplicatedException.class)
+    public ResponseEntity<ErrorMessageDTO> handleConflictExceptions(
+            HttpServletRequest request,
+            ResourceDuplicatedException e
+    ) {
+        var error = ErrorMessageDTO.builder()
+                .timestamp(Instant.now())
+                .exception(e.getClass().getSimpleName())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @Getter

@@ -2,7 +2,9 @@ package com.todo.domain.entites;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public enum PriorityEnum {
     UNSPECIFIED(0),
     LOW(1),
@@ -10,10 +12,6 @@ public enum PriorityEnum {
     HIGH(3);
 
     private final int value;
-
-    PriorityEnum(int value) {
-        this.value = value;
-    }
 
     @JsonValue
     public int getValue() {

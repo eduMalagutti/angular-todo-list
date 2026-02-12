@@ -1,8 +1,8 @@
 package com.todo.domain.entites;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -11,9 +11,13 @@ import java.util.Objects;
 @Getter
 @Builder
 public class Todo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @ManyToOne
+    private TodoList todoList;
 
     @Column(columnDefinition = "VARCHAR(500)")
     private String task;
@@ -23,8 +27,7 @@ public class Todo {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Todo)) return false;
-        Todo todo = (Todo) o;
+        if (!(o instanceof Todo todo)) return false;
         return Objects.equals(getId(), todo.getId());
     }
 

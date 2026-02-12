@@ -16,6 +16,4 @@ public class TodoApplication {
         System.setProperty("user.timezone", "UTC");
         SpringApplication.run(TodoApplication.class, args);
     }
-
-
 }

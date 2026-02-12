@@ -15,9 +15,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: "java"
-    apply plugin: "maven-publish"
-
     group "com.todo"
     version = version
 
